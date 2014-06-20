@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">le Chat de ta mère</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="welcome_title">Bienvenue dans le Chat de ta mère</string>
+    <string name="password_form">Ton mot de passe ici</string>
+    <string name="login_form">Ton identifiant ici</string>
+
+</resources>

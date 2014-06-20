@@ -1,0 +1,44 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#61D656"
+    tools:context="com.example.parlezvousandroid.MainActivity$PlaceholderFragment" > 
+    
+    <TextView
+        android:id="@+id/welcome_title"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:gravity="center"
+        android:paddingBottom="20dp"
+        android:paddingTop="20dp"
+        android:textSize="20dp"
+        android:text="@string/welcome_title" />
+    
+    <EditText
+        android:id="@+id/login_form"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_below="@+id/welcome_title"
+        android:layout_centerHorizontal="true"
+        android:gravity="center"
+        android:paddingBottom="20dp"
+        android:paddingTop="20dp"
+        android:textSize="20dp"
+        android:text="@string/login_form" />
+    <EditText
+        android:id="@+id/password_form"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_below="@+id/login_form"
+        android:layout_centerHorizontal="true"
+        android:gravity="center"
+        android:paddingBottom="20dp"
+        android:paddingTop="20dp"
+        android:textSize="20dp"
+        android:text="@string/password_form" />
+    
+</RelativeLayout>
+
