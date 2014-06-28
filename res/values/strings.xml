@@ -10,11 +10,15 @@
     <string name="cancel_btn">Cancel</string>
     <string name="connect_btn">Connect</string>
     <string name="title_activity_chat_page">ChatPage</string>
-    <string name="unknown_id">identifients incorrectes</string>
+    <string name="unknown_id">Identifients incorrectes</string>
     <string name="connexion_progress_title">Patientez</string>
-    <string name="connecsion_progress_body">interrogation du server</string>
-    <string name="forms_empty">veuillez remplir tous les champs</string>
-    <string name="unlog">déconnexion</string>
-    <string name="your_name">bonjour </string>
+    <string name="connecsion_progress_body">Interrogation du server</string>
+    <string name="forms_empty">Veuillez remplir tous les champs</string>
+    <string name="unlog">Déconnexion</string>
+    <string name="your_name">Bonjour </string>
+    <string name="your_message">Tapez votre message ici</string>
+    <string name="send_message">Envoyer</string>
+    <string name="send_failed">L\'envoie à échoué, essayez ultérieurement</string>    
+    <string name="message_empty">votre message est vide</string>
 
 </resources>

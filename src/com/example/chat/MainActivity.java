@@ -7,7 +7,6 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 
-
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
@@ -111,12 +110,16 @@ public class MainActivity extends ActionBarActivity {
 		@Override
 		protected void onPreExecute() {
 			super.onPreExecute();
-			spin = ProgressDialog
-					.show(MainActivity.this,
-							getResources().getString(
-									R.string.connexion_progress_title),
-							getResources().getString(
-									R.string.connecsion_progress_body));
+			if (spin != null) {
+				spin.show();
+			} else {
+				spin = ProgressDialog.show(
+						MainActivity.this,
+						getResources().getString(
+								R.string.connexion_progress_title),
+						getResources().getString(
+								R.string.connecsion_progress_body));
+			}
 		}
 
 		@Override
@@ -150,13 +153,23 @@ public class MainActivity extends ActionBarActivity {
 			super.onPostExecute(result);
 			spin.hide();
 			if (result) {
-				Editor editor = prefs.edit();
-				editor.putString("LOGIN", loginField.getText().toString());
-				editor.putString("PASSWORD", passwordField.getText().toString());
-				editor.commit();
+				String login;
+				String password;
+				if (!loginField.getText().toString().equals("")
+						&& !passwordField.getText().toString().equals("")) {
+					login = loginField.getText().toString();
+					password = passwordField.getText().toString();
+					Editor editor = prefs.edit();
+					editor.putString("LOGIN", login);
+					editor.putString("PASSWORD", password);
+					editor.commit();
+				} else {
+					login = prefs.getString("LOGIN", "");
+					password = prefs.getString("PASSWORD", "");
+				}
 				Intent intent = new Intent(MainActivity.this, ChatPage.class);
-				intent.putExtra("LOGIN", loginField.getText().toString());
-				intent.putExtra("PASSWORD", passwordField.getText().toString());
+				intent.putExtra("LOGIN", login);
+				intent.putExtra("PASSWORD", password);
 				startActivity(intent);
 			} else {
 				Toast toast = Toast.makeText(MainActivity.this, getResources()
