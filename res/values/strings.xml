@@ -20,5 +20,9 @@
     <string name="send_message">Envoyer</string>
     <string name="send_failed">L\'envoie à échoué, essayez ultérieurement</string>    
     <string name="message_empty">votre message est vide</string>
-
+    <string name="inscription_btn">Inscription</string>
+ 	<string name="or_txt">ou</string>
+ 	<string name="registration_title">Page Inscription</string>
+ 	<string name="subscribe_btn">Créer</string>
+ 	<string name="retour_btn">Retour Connexion</string>
 </resources>
