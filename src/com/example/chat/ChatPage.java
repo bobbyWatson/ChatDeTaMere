@@ -1,34 +1,31 @@
 package com.example.chat;
 
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 
-import android.R.string;
-import android.support.v7.app.ActionBarActivity;
-import android.support.v7.app.ActionBar;
-import android.support.v4.app.Fragment;
 import android.app.ProgressDialog;
-import android.content.DialogInterface.OnClickListener;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.os.Build;
 
 public class ChatPage extends ActionBarActivity {
 
@@ -38,13 +35,18 @@ public class ChatPage extends ActionBarActivity {
 	private TextView welcomeName;
 	private ProgressDialog spin;
 	private EditText messageZone;
+	private ListView list;
 	private Button sendButton;
 	private Button logoutBtn;
+
+	private ArrayAdapter<String> adapter;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_chat_page);
+
+		list = (ListView) findViewById(R.id.list);
 		messageZone = (EditText) findViewById(R.id.message_zone);
 
 		logoutBtn = (Button) findViewById(R.id.logout_btn);
@@ -56,14 +58,23 @@ public class ChatPage extends ActionBarActivity {
 		Intent intent = getIntent();
 		welcomeName = (TextView) findViewById(R.id.welcome_name);
 		if (intent != null) {
-			login = intent.getStringExtra("LOGIN");
+			login = intent.getStringExtra("LOGIN");	
 			password = intent.getStringExtra("PASSWORD");
 			welcomeName.setText(welcomeName.getText().toString() + " " + login);
 		}
 		
-		GetMessagesOperation task = new GetMessagesOperation();
-		task.execute();
+		//adapter = new ChatInfoAdapter(this, testStrings, R.id.message);
+		adapter = new ArrayAdapter<String>(getApplicationContext(), R.layout.message ,new ArrayList<String>());
+		list.setAdapter(adapter);
+		Timer timer = new Timer();
+		timer.scheduleAtFixedRate(new GetMessageTask(), 0L, 1000L);
 	
+	}
+	private class GetMessageTask extends TimerTask{
+		public void run() {
+			GetMessagesOperation getTask = new GetMessagesOperation();
+			getTask.execute();
+		}
 	}
 
 	@Override
@@ -150,14 +161,13 @@ public class ChatPage extends ActionBarActivity {
 				HttpClient httpclient = new DefaultHttpClient();
 				StringBuilder urlBuilder = new StringBuilder();
 				urlBuilder
-						.append("http://dev.loicortola.com/parlez-vous-android/message/")
+						.append("/")
 						.append(login).append("/").append(password).append("/")
 						.append(message);
 				HttpResponse response = httpclient.execute(new HttpGet(
 						urlBuilder.toString()));
 				content = response.getEntity().getContent();
 				String res = InputStreamToString.convert(content);
-				Log.i("TOTO", "coucou = " + res);
 				if (Boolean.valueOf(res)) {
 					return true;
 				}
@@ -171,16 +181,24 @@ public class ChatPage extends ActionBarActivity {
 		@Override
 		protected void onPostExecute(Boolean result) {
 			super.onPostExecute(result);
+			Log.i("TITI", "coucou "+result.toString());
 			spin.hide();
 			Log.i("POST EXECUTE",result.toString());
 			if (result) {
 				GetMessagesOperation task = new GetMessagesOperation();
 				task.execute();
-			} else {
+			}
+			GetMessagesOperation task = new GetMessagesOperation();
+			task.execute();
+			messageZone.setText("");
+			
+			/*if (result) {
+				
+			 else {
 				Toast toast = Toast.makeText(ChatPage.this, getResources()
 						.getString(R.string.send_failed), 2);
 				toast.show();
-			}
+			}*/
 		}
 	}
 
@@ -198,14 +216,24 @@ public class ChatPage extends ActionBarActivity {
 						.append(login).append("/").append(password);
 				HttpResponse response = httpclient.execute(new HttpGet(
 						urlBuilder.toString()));
-				Log.i("TOTO", "titi = "+ urlBuilder.toString());
 				content = response.getEntity().getContent();
 				String res = InputStreamToString.convert(content);
-				Log.i("TOTO", "messages = "+res);
 				return res;
 			} catch (Exception e) {
 				Log.i("[GET REQUEST]", "Network exception");
 				return null;
+			}
+		}
+		@Override
+		protected void onPostExecute(String result) {
+			// TODO Auto-generated method stub
+			super.onPostExecute(result);
+			String[] messages = result.split(";");
+			for(int i = adapter.getCount(); i < messages.length; i++){
+				String[] messageCuted = messages[i].split(":");
+				StringBuilder builder = new StringBuilder();
+				builder.append(messageCuted[0]).append(" said : ").append(messageCuted[1]);
+				adapter. add(builder.toString());
 			}
 		}
 	}
