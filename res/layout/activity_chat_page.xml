@@ -8,8 +8,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:weightSum="8"
-        android:orientation="vertical" >
+        android:orientation="vertical"
+        android:weightSum="8" >
 
         <TextView
             android:id="@+id/welcome_name"
@@ -17,35 +17,36 @@
             android:layout_height="1dp"
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
+            android:layout_weight="1"
             android:gravity="center"
             android:paddingBottom="1dp"
             android:paddingTop="10dp"
             android:text="@string/your_name"
-            android:textSize="20dp"
-            android:layout_weight="1" />
-        
-        <ListView 
+            android:textSize="20dp" />
+
+        <ListView
+            android:id="@+id/list"
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_weight="4.5"
-            android:background="#FFFFFF"
-            ></ListView>
-        
-        <EditText 
+            android:background="#FFFFFF" >
+        </ListView>
+
+        <EditText
+            android:id="@+id/message_zone"
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_weight="1.5"
             android:background="#CCCCCC"
             android:gravity="center"
-            android:hint="@string/your_message"
-            android:id="@+id/message_zone"
-            />
-        <Button 
+            android:hint="@string/your_message" />
+
+        <Button
+            android:id="@+id/send_message"
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_weight="1"
-            android:text="@string/send_message"
-            android:id="@+id/send_message"/>
+            android:text="@string/send_message" />
     </LinearLayout>
 
 </RelativeLayout>
