@@ -39,14 +39,18 @@ public class ChatPage extends ActionBarActivity {
 	private ProgressDialog spin;
 	private EditText messageZone;
 	private Button sendButton;
+	private Button logoutBtn;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_chat_page);
-
 		messageZone = (EditText) findViewById(R.id.message_zone);
+
+		logoutBtn = (Button) findViewById(R.id.logout_btn);
 		sendButton = (Button) findViewById(R.id.send_message);
+		
+		logoutBtn.setOnClickListener(logoutHandler);
 		sendButton.setOnClickListener(sendMessageHandler);
 
 		Intent intent = getIntent();
@@ -92,6 +96,19 @@ public class ChatPage extends ActionBarActivity {
 		return super.onOptionsItemSelected(item);
 	}
 
+	private View.OnClickListener logoutHandler = new View.OnClickListener() {
+		@Override
+		public void onClick(View v) {
+			prefs = getSharedPreferences(MainActivity.MyPREFERENCES, 0);
+			Editor editor = prefs.edit();
+			editor.putString("LOGIN", "");
+			editor.putString("PASSWORD", "");
+			editor.commit();
+			Intent intent = new Intent(ChatPage.this, MainActivity.class);
+			startActivity(intent);
+		}
+	};
+	
 	private View.OnClickListener sendMessageHandler = new View.OnClickListener() {
 		@Override
 		public void onClick(View v) {
@@ -135,7 +152,7 @@ public class ChatPage extends ActionBarActivity {
 				urlBuilder
 						.append("http://dev.loicortola.com/parlez-vous-android/message/")
 						.append(login).append("/").append(password).append("/")
-						.append(message);	
+						.append(message);
 				HttpResponse response = httpclient.execute(new HttpGet(
 						urlBuilder.toString()));
 				content = response.getEntity().getContent();
@@ -145,7 +162,7 @@ public class ChatPage extends ActionBarActivity {
 					return true;
 				}
 			} catch (Exception e) {
-				Log.i("[GET REQUEST]", "Network exception");
+				Log.i("[GET REQUEST]", e.toString());
 				return false;
 			}
 			return false;
@@ -155,6 +172,7 @@ public class ChatPage extends ActionBarActivity {
 		protected void onPostExecute(Boolean result) {
 			super.onPostExecute(result);
 			spin.hide();
+			Log.i("POST EXECUTE",result.toString());
 			if (result) {
 				GetMessagesOperation task = new GetMessagesOperation();
 				task.execute();

@@ -17,7 +17,8 @@ public class InputStreamToString {
  
 	    try {
 			while ((line = rd.readLine()) != null) { 
-			    builder.append(line); 
+			    Log.i("READ LINE CLASS STREAM",line);
+				builder.append(line);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();

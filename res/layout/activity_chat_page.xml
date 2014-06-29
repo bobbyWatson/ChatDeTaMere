@@ -11,6 +11,15 @@
         android:weightSum="8"
         android:orientation="vertical" >
 
+        <Button
+            android:id="@+id/logout_btn"
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="87dp"
+            android:layout_height="30dp"
+            android:layout_weight="0.06"
+            android:padding="2dp"
+            android:text="@string/logout_btn" />
+
         <TextView
             android:id="@+id/welcome_name"
             android:layout_width="match_parent"
@@ -21,6 +30,7 @@
             android:paddingBottom="1dp"
             android:paddingTop="10dp"
             android:text="@string/your_name"
+            android:padding="2dp"
             android:textSize="20dp"
             android:layout_weight="1" />
         

@@ -17,6 +17,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -40,8 +42,10 @@ public class MainActivity extends ActionBarActivity {
 		setContentView(R.layout.activity_main);
 
 		prefs = getSharedPreferences(MyPREFERENCES, 0);
+		
 		loginField = (EditText) findViewById(R.id.login_form);
 		passwordField = (EditText) findViewById(R.id.password_form);
+		
 		cancelBtn = (Button) findViewById(R.id.cancel_btn);
 		connectBtn = (Button) findViewById(R.id.connect_btn);
 		inscriptionBtn = (Button) findViewById(R.id.inscription_btn);
@@ -50,7 +54,6 @@ public class MainActivity extends ActionBarActivity {
 		connectBtn.setOnClickListener(submitHandler);
 		inscriptionBtn.setOnClickListener(inscriptionHandler);
 		
-		prefs = getSharedPreferences(MyPREFERENCES, 0);
 		if (prefs.getString("LOGIN", "") != ""
 				&& prefs.getString("PASSWORD", "") != "") {
 			AskConnectTask task = new AskConnectTask();
@@ -58,7 +61,12 @@ public class MainActivity extends ActionBarActivity {
 					prefs.getString("PASSWORD", ""));
 		}
 	}
-
+	
+	private void showShakeError(EditText current) {
+		Animation shake = AnimationUtils.loadAnimation(this, R.anim.shake); 
+		current.startAnimation(shake);
+	}
+	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
@@ -97,11 +105,20 @@ public class MainActivity extends ActionBarActivity {
 	private View.OnClickListener submitHandler = new View.OnClickListener() {
 		@Override
 		public void onClick(View v) {
-			if (loginField.getText().toString().equals("")
-					|| passwordField.getText().toString().equals("")) {
+			if (loginField.getText().toString().equals("")|| passwordField.getText().toString().equals("")) {
+				
+				if(loginField.getText().toString().equals("")){
+					showShakeError(loginField);
+				}
+				if(passwordField.getText().toString().equals("")){
+					showShakeError(passwordField);
+				}
+					
 				Toast toast = Toast.makeText(MainActivity.this, getResources()
 						.getString(R.string.forms_empty), 2);
 				toast.show();
+				
+					
 			} else {
 				AskConnectTask task = new AskConnectTask();
 				task.execute(loginField.getText().toString(), passwordField
@@ -178,6 +195,9 @@ public class MainActivity extends ActionBarActivity {
 				intent.putExtra("PASSWORD", password);
 				startActivity(intent);
 			} else {
+				
+				showShakeError(loginField);
+				showShakeError(passwordField);
 				Toast toast = Toast.makeText(MainActivity.this, getResources()
 						.getString(R.string.unknown_id), 2);
 				toast.show();

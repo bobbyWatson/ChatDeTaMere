@@ -18,6 +18,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
+import android.os.Debug;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -148,28 +149,30 @@ public class SubscriberPage extends ActionBarActivity {
 				nameValuePairs.add(new BasicNameValuePair("username", login));
 		        nameValuePairs.add(new BasicNameValuePair("password", password));
 		        httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-		       
+		        Log.i("[post REQUEST]",httppost.toString());
 		        HttpResponse response = httpclient.execute(httppost);
 				content = response.getEntity().getContent();
+				
 				String res = InputStreamToString.convert(content);
 				
 				if (Boolean.valueOf(res)) {
 					return true;
 				}
 			} catch (Exception e) {
-				Log.i("[GET REQUEST]", "Network exception");
+				Log.i("[GET REQUEST]", e.toString());
 				return false;
 			}
 			return false;
 		}
 
-		@Override
+		@Override	
 		protected void onPostExecute(Boolean result) {
 			super.onPostExecute(result);
 			spin.hide();
-			Log.v("subscriber", result.toString());
 			
+			Log.i("subscriber", result.toString());
 			if (result) {
+				
 				String login;
 				String password;
 				if (!loginField.getText().toString().equals("")

@@ -26,4 +26,5 @@
  	<string name="registration_title">Page Inscription</string>
  	<string name="subscribe_btn">Créer</string>
  	<string name="retour_btn">Retour Connexion</string>
+ 	<string name="logout_btn">Log Out</string>
 </resources>
