@@ -1,11 +1,17 @@
 package com.example.chat;
 
 import java.io.InputStream;
+import java.text.BreakIterator;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -21,15 +27,15 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-public class MainActivity extends ActionBarActivity {
+public class SubscriberPage extends ActionBarActivity {
 
 	public static final String MyPREFERENCES = "chatPrefs";
 
 	private EditText loginField;
 	private EditText passwordField;
 	private Button cancelBtn;
-	private Button connectBtn;
-	private Button inscriptionBtn;
+	private Button subscribeBtn;
+	private Button retourBtn;
 	private ProgressDialog spin;
 	private SharedPreferences prefs;
 
@@ -37,18 +43,18 @@ public class MainActivity extends ActionBarActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
-		setContentView(R.layout.activity_main);
-
+		setContentView(R.layout.activity_subscriber);
+		Intent intent = getIntent();
 		prefs = getSharedPreferences(MyPREFERENCES, 0);
 		loginField = (EditText) findViewById(R.id.login_form);
 		passwordField = (EditText) findViewById(R.id.password_form);
 		cancelBtn = (Button) findViewById(R.id.cancel_btn);
-		connectBtn = (Button) findViewById(R.id.connect_btn);
-		inscriptionBtn = (Button) findViewById(R.id.inscription_btn);
-		
+		subscribeBtn = (Button) findViewById(R.id.subscribe_btn);
+		retourBtn = (Button) findViewById(R.id.retour_btn);
+//		
 		cancelBtn.setOnClickListener(cancelHandler);
-		connectBtn.setOnClickListener(submitHandler);
-		inscriptionBtn.setOnClickListener(inscriptionHandler);
+		subscribeBtn.setOnClickListener(submitHandler);
+		retourBtn.setOnClickListener(returnHandler);
 		
 		prefs = getSharedPreferences(MyPREFERENCES, 0);
 		if (prefs.getString("LOGIN", "") != ""
@@ -86,20 +92,18 @@ public class MainActivity extends ActionBarActivity {
 		}
 	};
 	
-	private View.OnClickListener inscriptionHandler = new View.OnClickListener() {
+	private View.OnClickListener returnHandler = new View.OnClickListener() {
 		@Override
 		public void onClick(View v) {
-			Intent intent = new Intent(getApplicationContext(), SubscriberPage.class);
-			MainActivity.this.startActivity(intent);
+			finish();
 		}
 	};
-
 	private View.OnClickListener submitHandler = new View.OnClickListener() {
 		@Override
 		public void onClick(View v) {
 			if (loginField.getText().toString().equals("")
 					|| passwordField.getText().toString().equals("")) {
-				Toast toast = Toast.makeText(MainActivity.this, getResources()
+				Toast toast = Toast.makeText(SubscriberPage.this, getResources()
 						.getString(R.string.forms_empty), 2);
 				toast.show();
 			} else {
@@ -120,7 +124,7 @@ public class MainActivity extends ActionBarActivity {
 				spin.show();
 			} else {
 				spin = ProgressDialog.show(
-						MainActivity.this,
+						SubscriberPage.this,
 						getResources().getString(
 								R.string.connexion_progress_title),
 						getResources().getString(
@@ -138,12 +142,17 @@ public class MainActivity extends ActionBarActivity {
 				HttpClient httpclient = new DefaultHttpClient();
 				StringBuilder urlBuilder = new StringBuilder();
 				urlBuilder
-						.append("http://dev.loicortola.com/parlez-vous-android/connect/")
-						.append(login).append("/").append(password);
-				HttpResponse response = httpclient.execute(new HttpGet(
-						urlBuilder.toString()));
+						.append("http://dev.loicortola.com/parlez-vous-android/subscribe");
+				HttpPost httppost= new HttpPost(urlBuilder.toString());
+				List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
+				nameValuePairs.add(new BasicNameValuePair("username", login));
+		        nameValuePairs.add(new BasicNameValuePair("password", password));
+		        httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+		       
+		        HttpResponse response = httpclient.execute(httppost);
 				content = response.getEntity().getContent();
 				String res = InputStreamToString.convert(content);
+				
 				if (Boolean.valueOf(res)) {
 					return true;
 				}
@@ -158,6 +167,8 @@ public class MainActivity extends ActionBarActivity {
 		protected void onPostExecute(Boolean result) {
 			super.onPostExecute(result);
 			spin.hide();
+			Log.v("subscriber", result.toString());
+			
 			if (result) {
 				String login;
 				String password;
@@ -173,12 +184,12 @@ public class MainActivity extends ActionBarActivity {
 					login = prefs.getString("LOGIN", "");
 					password = prefs.getString("PASSWORD", "");
 				}
-				Intent intent = new Intent(MainActivity.this, ChatPage.class);
-				intent.putExtra("LOGIN", login);
-				intent.putExtra("PASSWORD", password);
-				startActivity(intent);
+//				Intent intent = new Intent(SubscriberPage.this, ChatPage.class);
+//				intent.putExtra("LOGIN", login);
+//				intent.putExtra("PASSWORD", password);
+//				startActivity(intent);
 			} else {
-				Toast toast = Toast.makeText(MainActivity.this, getResources()
+				Toast toast = Toast.makeText(SubscriberPage.this, getResources()
 						.getString(R.string.unknown_id), 2);
 				toast.show();
 			}

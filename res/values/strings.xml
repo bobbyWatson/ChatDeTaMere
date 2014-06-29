@@ -9,7 +9,8 @@
     <string name="login_form">Ton identifiant ici</string>
     <string name="cancel_btn">Cancel</string>
     <string name="connect_btn">Connect</string>
-    <string name="title_activity_chat_page">ChatPage</string>
+    <string name="title_activity_chat_page">Chat Page</string>
+     <string name="title_activity_subscriber_page">Page Inscription</string>
     <string name="unknown_id">Identifients incorrectes</string>
     <string name="connexion_progress_title">Patientez</string>
     <string name="connecsion_progress_body">Interrogation du server</string>
