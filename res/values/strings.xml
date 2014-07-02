@@ -12,6 +12,7 @@
     <string name="title_activity_chat_page">Chat Page</string>
      <string name="title_activity_subscriber_page">Page Inscription</string>
     <string name="unknown_id">Identifients incorrectes</string>
+    <string name="api_return_shit">Identifients incorrectes</string>
     <string name="connexion_progress_title">Patientez</string>
     <string name="connecsion_progress_body">Interrogation du server</string>
     <string name="forms_empty">Veuillez remplir tous les champs</string>

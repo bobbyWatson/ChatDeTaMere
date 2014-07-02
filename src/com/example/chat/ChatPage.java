@@ -2,6 +2,7 @@ package com.example.chat;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -26,9 +27,10 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+import biz.source_code.base64Coder.Base64Coder;
 
 public class ChatPage extends ActionBarActivity {
-
+	// Declare every private variables we will need
 	private SharedPreferences prefs;
 	private String login;
 	private String password;
@@ -38,38 +40,50 @@ public class ChatPage extends ActionBarActivity {
 	private ListView list;
 	private Button sendButton;
 	private Button logoutBtn;
-
+	private Boolean isAnimationRun;
 	private ArrayAdapter<String> adapter;
-
+	
+	/**
+	 * Init of the current activity and her view
+	 */
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		// Set the view associated to this activity
 		setContentView(R.layout.activity_chat_page);
-
+		// Get all field and buttons from the view
+		isAnimationRun = false;
 		list = (ListView) findViewById(R.id.list);
 		messageZone = (EditText) findViewById(R.id.message_zone);
-
+		
+		welcomeName = (TextView) findViewById(R.id.welcome_name);
+		
 		logoutBtn = (Button) findViewById(R.id.logout_btn);
 		sendButton = (Button) findViewById(R.id.send_message);
-		
+		// Add events listeners on every buttons
 		logoutBtn.setOnClickListener(logoutHandler);
 		sendButton.setOnClickListener(sendMessageHandler);
-
+				
+		// Init intent saved before and test it for get all data inside of it.
 		Intent intent = getIntent();
-		welcomeName = (TextView) findViewById(R.id.welcome_name);
 		if (intent != null) {
 			login = intent.getStringExtra("LOGIN");	
 			password = intent.getStringExtra("PASSWORD");
+			// Init header label with our login field value
 			welcomeName.setText(welcomeName.getText().toString() + " " + login);
 		}
 		
-		//adapter = new ChatInfoAdapter(this, testStrings, R.id.message);
+		// adapter = new ChatInfoAdapter(this, testStrings, R.id.message);
 		adapter = new ArrayAdapter<String>(getApplicationContext(), R.layout.message ,new ArrayList<String>());
 		list.setAdapter(adapter);
+		// Set new interval timer for call every X seconde one specific function
 		Timer timer = new Timer();
 		timer.scheduleAtFixedRate(new GetMessageTask(), 0L, 1000L);
 	
 	}
+	/**
+	 *  task wrapper to execute a update of chat messages.
+	 */
 	private class GetMessageTask extends TimerTask{
 		public void run() {
 			GetMessagesOperation getTask = new GetMessagesOperation();
@@ -84,7 +98,7 @@ public class ChatPage extends ActionBarActivity {
 		getMenuInflater().inflate(R.menu.chat_page, menu);
 		return true;
 	}
-
+	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		// Handle action bar item clicks here. The action bar will
@@ -106,7 +120,9 @@ public class ChatPage extends ActionBarActivity {
 		}
 		return super.onOptionsItemSelected(item);
 	}
-
+	/**
+	 * Log out button listener callback function , for logout from the chat 
+	 */
 	private View.OnClickListener logoutHandler = new View.OnClickListener() {
 		@Override
 		public void onClick(View v) {
@@ -119,27 +135,39 @@ public class ChatPage extends ActionBarActivity {
 			startActivity(intent);
 		}
 	};
-	
+	/**
+	 * send message button listener callback  
+	 */
 	private View.OnClickListener sendMessageHandler = new View.OnClickListener() {
 		@Override
 		public void onClick(View v) {
+			// Test if messageZone field is empty			
 			if (messageZone.getText().toString().equals("")) {
+				// display toast with error message
 				Toast toast = Toast.makeText(ChatPage.this, getResources()
 						.getString(R.string.message_empty), 2);
 				toast.show();
+				// Start animation error (shaking) the field.
+				Anims.ShakeError(ChatPage.this, messageZone);
 			} else {
+				// start send of the current message
 				SendMessageOperation task = new SendMessageOperation();
 				task.execute(messageZone.getText().toString());
+				
 			}
 		}
 	};
 
+	/**
+	 * private class for create and send message on chat
+	 */
 	private class SendMessageOperation extends
 			android.os.AsyncTask<String, Void, Boolean> {
 
 		@Override
 		protected void onPreExecute() {
 			super.onPreExecute();
+			// Show or set up spinning loader 
 			if (spin != null) {
 				spin.show();
 			} else {
@@ -154,20 +182,28 @@ public class ChatPage extends ActionBarActivity {
 
 		@Override
 		protected Boolean doInBackground(String... params) {
-			String message = params[0];
-
+			// Transform current message on base64			
+			String message =  Base64Coder.encodeString(params[0]);
+			
 			InputStream content = null;
+			// Try catch for send message to others user on chat api			
 			try {
 				HttpClient httpclient = new DefaultHttpClient();
+				// Init url request.
 				StringBuilder urlBuilder = new StringBuilder();
+				// Setting url request and params.
 				urlBuilder
-						.append("/")
+						.append("http://dev.loicortola.com/parlez-vous-android/message/")
 						.append(login).append("/").append(password).append("/")
 						.append(message);
+				// Execute http request and stock inside response var the return
 				HttpResponse response = httpclient.execute(new HttpGet(
 						urlBuilder.toString()));
+				// Get data from response !! it's a data stream !!
 				content = response.getEntity().getContent();
+				// Transforms data stream to string
 				String res = InputStreamToString.convert(content);
+				// Test if return value of call is boolean, if it's one then we validate the call and return value				
 				if (Boolean.valueOf(res)) {
 					return true;
 				}
@@ -181,42 +217,70 @@ public class ChatPage extends ActionBarActivity {
 		@Override
 		protected void onPostExecute(Boolean result) {
 			super.onPostExecute(result);
-			Log.i("TITI", "coucou "+result.toString());
+			// Hide spinning loader 
 			spin.hide();
-			Log.i("POST EXECUTE",result.toString());
-			if (result) {
-				GetMessagesOperation task = new GetMessagesOperation();
-				task.execute();
-			}
+			// Start à update of post messages on chat		
 			GetMessagesOperation task = new GetMessagesOperation();
 			task.execute();
+			// Empty text field for next message
 			messageZone.setText("");
-			
-			/*if (result) {
-				
-			 else {
-				Toast toast = Toast.makeText(ChatPage.this, getResources()
-						.getString(R.string.send_failed), 2);
-				toast.show();
-			}*/
 		}
 	}
-
-	private class GetMessagesOperation extends
+	
+	
+	private String patternEmoji(String args, int index, int messageslength, String from) {
+			
+			String txt = null;
+			String tempString = args;
+			
+			String re1=":";	// Any Single Character 1
+			int firstPoint = tempString.indexOf(re1);			
+			int secondPoint = tempString.indexOf(":",firstPoint+1);
+			Log.v("TEST ENFOIR2",from+" "+login);
+			if(firstPoint>-1 && secondPoint>-1  ){
+				txt = tempString.substring(firstPoint+1, secondPoint);
+				// find every :helpers and remove then;				
+				args = args.replace(":wizz:", "! WINK DANS TA FACE !");
+				 
+				if(!txt.contains(" ") && txt.contentEquals("wizz")&& messageslength-1==index&& !from.contentEquals(login) ){	
+						Anims.wizz(getApplicationContext());
+						 
+				}
+				
+				return args;
+			}
+			else{
+				return args;
+			}
+		    
+	}
+	
+	/**
+	 * class for get message from api on dev.loicortola.com server
+	 */
+	class GetMessagesOperation extends
 			android.os.AsyncTask<Void, Void, String> {
-
+		
+		/**
+		 * that function executed asynchronously make call and get data from message api on dev.loicortola.com server
+		 */
 		@Override
 		protected String doInBackground(Void... params) {
 			InputStream content = null;
 			try {
 				HttpClient httpclient = new DefaultHttpClient();
+				// Init url request.
 				StringBuilder urlBuilder = new StringBuilder();
+				// Setting url request and params.
 				urlBuilder
 						.append("http://dev.loicortola.com/parlez-vous-android/messages/")
 						.append(login).append("/").append(password);
+				// Execute http request and stock inside response var the return
 				HttpResponse response = httpclient.execute(new HttpGet(
 						urlBuilder.toString()));
+				// Get data from response !! it's a data stream !!
 				content = response.getEntity().getContent();
+				// Transforms data stream to string
 				String res = InputStreamToString.convert(content);
 				return res;
 			} catch (Exception e) {
@@ -224,17 +288,41 @@ public class ChatPage extends ActionBarActivity {
 				return null;
 			}
 		}
+		/**
+		 * Function called at the end of the request, actually, she get all messages from chat 
+		 * and parse them from base64 to string and display them.
+		 */
 		@Override
 		protected void onPostExecute(String result) {
 			// TODO Auto-generated method stub
 			super.onPostExecute(result);
 			String[] messages = result.split(";");
+			// Loop on every messages
 			for(int i = adapter.getCount(); i < messages.length; i++){
-				String[] messageCuted = messages[i].split(":");
-				StringBuilder builder = new StringBuilder();
-				builder.append(messageCuted[0]).append(" said : ").append(messageCuted[1]);
-				adapter. add(builder.toString());
+			
+				// Split the current message to get message username and body message under base64
+				String[] messageCuted= messages[i].split(":");
+				// Test if array of strings containing both username and message.
+				if(messageCuted.length==2){
+					
+					StringBuilder builder = new StringBuilder();
+					// Try catch to decode message from base64.
+					try {
+						// Base64 message decoding
+						String currentMessage=Base64Coder.decodeString(messageCuted[1]);
+						
+						// Pass our message inside our emoji pattern tester for transform string :wizz: and add interactions.						
+						currentMessage=patternEmoji(currentMessage,i,messages.length,messageCuted[0]);
+						
+						// Append current decoded message to the list
+						builder.append(messageCuted[0]).append(" said : ").append(currentMessage);
+						adapter.add(builder.toString());
+					} catch (Exception e) {
+						Log.d("BASE64 DECODE FAIL",messageCuted[1]+" "+e.toString());
+					}
+				}
 			}
 		}
 	}
 }
+
