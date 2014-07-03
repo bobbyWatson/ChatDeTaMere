@@ -28,4 +28,5 @@
  	<string name="subscribe_btn">Créer</string>
  	<string name="retour_btn">Retour Connexion</string>
  	<string name="logout_btn">Log Out</string>
+ 	<string name="subscriber">Ca plante pas juste que le webservice ne renvois pas un code erreur juste html...</string>
 </resources>

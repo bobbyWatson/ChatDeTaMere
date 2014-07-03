@@ -9,29 +9,29 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
+        style="@style/colorLayout"
         android:weightSum="8" >
 
         <Button
             android:id="@+id/logout_btn"
-            style="?android:attr/buttonStyleSmall"
-            android:layout_width="87dp"
+            style="@style/colorBtnCancel"
+            android:layout_width="113dp"
             android:layout_height="30dp"
-            android:layout_weight="0.06"
             android:padding="2dp"
-            android:text="@string/logout_btn" />
+            android:text="@string/logout_btn"
+            android:textSize="15dp" />
 
         <TextView
             android:id="@+id/welcome_name"
+            style="@style/colorHeader"
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true"
+            android:textSize="17dp"
             android:layout_weight="1"
-            android:gravity="center"
+            android:gravity="center_vertical"
+            android:textAlignment="viewStart"
             android:paddingBottom="1dp"
-            android:paddingTop="10dp"
-            android:text="@string/your_name"
-            android:textSize="20dp" />
+            android:text="@string/your_name" />
 
         <ListView
             android:id="@+id/list"
@@ -55,6 +55,7 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_weight="1"
+            style="@style/colorBtnValidate"
             android:text="@string/send_message" />
     </LinearLayout>
 
