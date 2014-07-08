@@ -61,22 +61,10 @@ public class CustomArrayAdapter extends ArrayAdapter<String> {
 		
 		fieldText = (TextView) currentV.findViewById(R.id.comment);
 		
-		fieldText.setText(coment);
+		fieldText.setText(coment);		
 		
-//		if(position%2==0)
-//		{
-//	     // even position color
-//		  currentV.setBackgroundColor(colorA);
-//		}
-//		else
-//		{
-//	    // odd position color
-//		  currentV.setBackgroundColor(colorB);
-//		}
-		
-		
-		fieldText.setBackgroundResource(isMyMessage(coment) ? R.drawable.bubble_yellow : R.drawable.bubble_green);
-		wrapper.setGravity(isMyMessage(coment) ? Gravity.LEFT : Gravity.RIGHT);
+		fieldText.setBackgroundResource(!isMyMessage(coment) ? R.drawable.bubble_yellow : R.drawable.bubble_green);
+		wrapper.setGravity(!isMyMessage(coment) ? Gravity.LEFT : Gravity.RIGHT);
 		return currentV;
 	}
 	

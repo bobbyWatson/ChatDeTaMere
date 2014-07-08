@@ -26,12 +26,13 @@
             style="@style/colorHeader"
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:textSize="17dp"
+            android:paddingTop="0dp"
             android:layout_weight="1"
-            android:gravity="center_vertical"
-            android:textAlignment="viewStart"
+            android:gravity="center"
             android:paddingBottom="1dp"
-            android:text="@string/your_name" />
+            android:text="@string/your_name"
+            android:textAlignment="viewStart"
+            android:textSize="17dp" />
 
         <ListView
             android:id="@+id/list"

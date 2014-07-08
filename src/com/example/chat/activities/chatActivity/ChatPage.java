@@ -14,8 +14,11 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Bundle;
-import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -36,7 +39,8 @@ import com.example.chat.tools.anims.Anims;
 import com.example.chat.tools.soundClass.SoundManager;
 import com.example.chat.tools.streamToStringClass.InputStreamToString;
 
-public class ChatPage extends ActionBarActivity {
+public class ChatPage extends ActionBarActivity implements SensorEventListener {
+	private static final float SHAKE_THRESHOLD = 3000;
 	// Declare every private variables we will need
 	private SharedPreferences prefs;
 	public String login;
@@ -50,6 +54,11 @@ public class ChatPage extends ActionBarActivity {
 	private Boolean isAnimationRun;
 	private ArrayAdapter<String> adapter;
 	private SoundManager songs;
+	private SensorManager sm;
+	private long lastUpdate;
+	private float last_x;
+	private float last_y;
+	private float last_z;
 	/**
 	 * Init of the current activity and her view
 	 */
@@ -71,6 +80,10 @@ public class ChatPage extends ActionBarActivity {
 		
 		welcomeName = (TextView) findViewById(R.id.welcome_name);
 		
+		last_x=0;
+		last_y=0;
+		last_z=0;
+		
 		logoutBtn = (Button) findViewById(R.id.logout_btn);
 		sendButton = (Button) findViewById(R.id.send_message);
 		// Add events listeners on every buttons
@@ -85,7 +98,13 @@ public class ChatPage extends ActionBarActivity {
 			// Init header label with our login field value
 			welcomeName.setText(welcomeName.getText().toString() + " " + login);
 		}
+				
+		sm = (SensorManager)getSystemService(SENSOR_SERVICE);
 		
+		if(sm.getSensorList(Sensor.TYPE_ACCELEROMETER).size()!=0){
+			Sensor s = sm.getSensorList(Sensor.TYPE_ACCELEROMETER).get(0);
+			sm.registerListener(this,s, SensorManager.SENSOR_DELAY_NORMAL);
+		}
 		// adapter = new ChatInfoAdapter(this, testStrings, R.id.message);
 		adapter = new CustomArrayAdapter(getApplicationContext(), R.layout.messageother ,new ArrayList<String>(),login);
 		list.setAdapter(adapter);
@@ -94,6 +113,33 @@ public class ChatPage extends ActionBarActivity {
 		Timer timer = new Timer();
 		timer.scheduleAtFixedRate(new GetMessageTask(), 0L, 2000L);
 	
+	}
+	
+	
+	public void onSensorChanged(SensorEvent event) {
+		if (event.sensor.getType() != Sensor.TYPE_ACCELEROMETER)
+            return;
+		Log.v("SCREEN8SHAKE", event.toString());
+		long curTime = System.currentTimeMillis();
+	    // only allow one update every 100ms.
+	    if ((curTime - lastUpdate) > 100) {
+	      long diffTime = (curTime - lastUpdate);
+	      lastUpdate = curTime;
+
+	      float x = event.values[SensorManager.DATA_X];
+	      float y = event.values[SensorManager.DATA_Y];
+	      float z = event.values[SensorManager.DATA_Z];
+
+	      float speed = Math.abs(x+y+z-last_x-last_y-last_z) / diffTime * 10000;
+
+	      if (speed > SHAKE_THRESHOLD) {
+	        Log.d("sensor", "shake detected w/ speed: " + speed);
+	        Toast.makeText(this, "shake detected w/ speed: " + speed, Toast.LENGTH_SHORT).show();
+	      }
+	      last_x = x;
+	      last_y = y;
+	      last_z = z;
+	    }
 	}
 	/**
 	 *  task wrapper to execute a update of chat messages.
@@ -354,6 +400,12 @@ public class ChatPage extends ActionBarActivity {
 				}
 			}
 		}
+	}
+
+	@Override
+	public void onAccuracyChanged(Sensor sensor, int accuracy) {
+		// TODO Auto-generated method stub
+		
 	}
 }
 
