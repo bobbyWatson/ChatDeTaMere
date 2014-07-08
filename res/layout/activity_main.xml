@@ -12,6 +12,7 @@
         android:layout_below="@+id/login_form"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="50dp"
+        android:imeOptions="actionSend"
 		style="@style/colorTxt"
         android:hint="@string/password_form"
         android:inputType="textPassword"/>

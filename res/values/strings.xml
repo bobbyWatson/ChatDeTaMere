@@ -7,7 +7,7 @@
     <string name="welcome_title">Bienvenue dans le Chat de ta mère</string>
     <string name="password_form">Ton mot de passe ici</string>
     <string name="login_form">Ton identifiant ici</string>
-    <string name="cancel_btn">Cancel</string>
+    <string name="cancel_btn">Vider Champs</string>
     <string name="connect_btn">Connect</string>
     <string name="title_activity_chat_page">Chat Page</string>
      <string name="title_activity_subscriber_page">Page Inscription</string>

@@ -17,7 +17,7 @@
         android:theme="@style/AppTheme"
         android:screenOrientation="portrait" >
         <activity
-            android:name="com.example.chat.mainActivity.MainActivity"
+            android:name="com.example.chat.activities.mainActivity.MainActivity"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -26,11 +26,11 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.example.chat.chatActivity.ChatPage"
+            android:name="com.example.chat.activities.chatActivity.ChatPage"
             android:label="@string/title_activity_chat_page" >
         </activity>
         <activity
-            android:name="com.example.chat.subscriberActivity.SubscriberPage"
+            android:name="com.example.chat.activities.subscriberActivity.SubscriberPage"
             >
         </activity>
         
