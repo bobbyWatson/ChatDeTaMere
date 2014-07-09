@@ -92,7 +92,7 @@ public class ChatPage extends ActionBarActivity implements SensorEventListener {
 		songs.tableCompare.put("bigfart",1);
 		songs.tableCompare.put("wetfart",2);
 		songs.tableCompare.put("autority",3);
-		songs.tableCompare.put("thibmom",4);
+		songs.tableCompare.put("mom",4);
 		songs.tableCompare.put("whip",5);
 		songs.tableCompare.put("hum",6);
 		// Init header connection 
@@ -329,7 +329,7 @@ public class ChatPage extends ActionBarActivity implements SensorEventListener {
 			if(firstPoint>-1 && secondPoint>-1  ){
 				txt = tempString.substring(firstPoint+1, secondPoint);
 				// find every :helpers and remove then;				
-				args = args.replace(":thibmom:", "! Song from south park !");
+				args = args.replace(":mom:", "! Song from south park !");
 				args = args.replace(":bigfart:", "! Ca sent le gaz !");
 				args = args.replace(":wetfart:", "! Change ton caleçon !");
 				args = args.replace(":autority:", "! Respect mon autorité !");

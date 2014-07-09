@@ -23,11 +23,11 @@ public class SoundManager {
 	public final int sound2;
 	public final int sound3;
 	public final int sound4;
+	public final int sound5;
+	public final int sound6;
 	
 	public Map<String, Integer> tableCompare=new HashMap<String, Integer>();
 
-	public final int sound5;
-	public final int sound6;
 
 	public Boolean ready;
 	
