@@ -70,7 +70,6 @@ public class CustomArrayAdapter extends ArrayAdapter<String> {
 	
 	private Boolean isMyMessage(String message){
 		String[] currentMessages = message.split(" said :");
-		
 		return currentMessages[0].contentEquals(login);
 	}
 }

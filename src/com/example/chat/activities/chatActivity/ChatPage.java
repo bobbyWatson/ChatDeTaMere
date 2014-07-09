@@ -21,15 +21,18 @@ import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.TextView.OnEditorActionListener;
 import biz.source_code.base64Coder.Base64Coder;
 
 import com.example.chat.R;
@@ -40,7 +43,7 @@ import com.example.chat.tools.soundClass.SoundManager;
 import com.example.chat.tools.streamToStringClass.InputStreamToString;
 
 public class ChatPage extends ActionBarActivity implements SensorEventListener {
-	private static final float SHAKE_THRESHOLD = 3000;
+	private static final float SHAKE_THRESHOLD = 2000;
 	// Declare every private variables we will need
 	private SharedPreferences prefs;
 	public String login;
@@ -54,6 +57,7 @@ public class ChatPage extends ActionBarActivity implements SensorEventListener {
 	private Boolean isAnimationRun;
 	private ArrayAdapter<String> adapter;
 	private SoundManager songs;
+	private Boolean isSoundPlaying;
 	private SensorManager sm;
 	private long lastUpdate;
 	private float last_x;
@@ -71,25 +75,40 @@ public class ChatPage extends ActionBarActivity implements SensorEventListener {
 		isAnimationRun = false;
 		list = (ListView) findViewById(R.id.list);
 		messageZone = (EditText) findViewById(R.id.message_zone);
-		
+		messageZone.setOnEditorActionListener(new OnEditorActionListener() {
+		    @Override
+		    public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+		        boolean handled = false;
+		        if (actionId == EditorInfo.IME_ACTION_SEND) {
+		        	sendButton.performClick();
+		            handled = true;
+		        }
+		        return handled;
+		    }
+		});
+		welcomeName = (TextView) findViewById(R.id.welcome_name);
+		// Init song manager and string catcher
 		songs = new SoundManager(getApplicationContext());
 		songs.tableCompare.put("bigfart",1);
 		songs.tableCompare.put("wetfart",2);
 		songs.tableCompare.put("autority",3);
 		songs.tableCompare.put("thibmom",4);
-		
-		welcomeName = (TextView) findViewById(R.id.welcome_name);
+		songs.tableCompare.put("whip",5);
+		songs.tableCompare.put("hum",6);
+		// Init header connection 
 		
 		last_x=0;
 		last_y=0;
 		last_z=0;
+		
+		isSoundPlaying = false;
 		
 		logoutBtn = (Button) findViewById(R.id.logout_btn);
 		sendButton = (Button) findViewById(R.id.send_message);
 		// Add events listeners on every buttons
 		logoutBtn.setOnClickListener(logoutHandler);
 		sendButton.setOnClickListener(sendMessageHandler);
-				
+			
 		// Init intent saved before and test it for get all data inside of it.
 		Intent intent = getIntent();
 		if (intent != null) {
@@ -98,7 +117,7 @@ public class ChatPage extends ActionBarActivity implements SensorEventListener {
 			// Init header label with our login field value
 			welcomeName.setText(welcomeName.getText().toString() + " " + login);
 		}
-				
+		// Set shaking detection
 		sm = (SensorManager)getSystemService(SENSOR_SERVICE);
 		
 		if(sm.getSensorList(Sensor.TYPE_ACCELEROMETER).size()!=0){
@@ -111,15 +130,15 @@ public class ChatPage extends ActionBarActivity implements SensorEventListener {
 		
 		// Set new interval timer for call every X seconde one specific function
 		Timer timer = new Timer();
-		timer.scheduleAtFixedRate(new GetMessageTask(), 0L, 2000L);
-	
+		timer.scheduleAtFixedRate(new GetMessageTask(), 0L, 5000L);
 	}
 	
-	
+	/*
+	 * Active sensor and detect mobile shaking and display a message to every peoples on connect to the chat
+	 */
 	public void onSensorChanged(SensorEvent event) {
 		if (event.sensor.getType() != Sensor.TYPE_ACCELEROMETER)
             return;
-		Log.v("SCREEN8SHAKE", event.toString());
 		long curTime = System.currentTimeMillis();
 	    // only allow one update every 100ms.
 	    if ((curTime - lastUpdate) > 100) {
@@ -133,8 +152,12 @@ public class ChatPage extends ActionBarActivity implements SensorEventListener {
 	      float speed = Math.abs(x+y+z-last_x-last_y-last_z) / diffTime * 10000;
 
 	      if (speed > SHAKE_THRESHOLD) {
-	        Log.d("sensor", "shake detected w/ speed: " + speed);
-	        Toast.makeText(this, "shake detected w/ speed: " + speed, Toast.LENGTH_SHORT).show();
+	    	  songs.playSound(songs.tableCompare.get("whip"));
+	    	  SendMessageOperation task = new SendMessageOperation();
+	    	  task.execute(":hum:");
+	    	  return;
+//	        Log.d("sensor", "shake detected w/ speed: " + speed);
+//	        Toast.makeText(this, "shake detected w/ speed: " + speed, Toast.LENGTH_SHORT).show();
 	      }
 	      last_x = x;
 	      last_y = y;
@@ -213,7 +236,6 @@ public class ChatPage extends ActionBarActivity implements SensorEventListener {
 				// start send of the current message
 				SendMessageOperation task = new SendMessageOperation();
 				task.execute(messageZone.getText().toString());
-				
 			}
 		}
 	};
@@ -312,15 +334,19 @@ public class ChatPage extends ActionBarActivity implements SensorEventListener {
 				args = args.replace(":wetfart:", "! Change ton caleçon !");
 				args = args.replace(":autority:", "! Respect mon autorité !");
 				args = args.replace(":wizz:", "! WINK DANS TA FACE !");
+				args = args.replace(":hum:", "! J'ORDONNE !");
 				// start song if good helper is written
-				if(!txt.contains(" ") && songs.tableCompare.containsKey(txt) && messageslength-1==index && !from.contentEquals(login) ){	
+				if(!txt.contains(" ") && songs.tableCompare.containsKey(txt) && messageslength-1==index && !from.contentEquals(login) && !isSoundPlaying  ){	
 					songs.playSound(songs.tableCompare.get(txt));
+					isSoundPlaying = true;
 				}
 				// start vibration if good helper is written , wizz
 				if(!txt.contains(" ") && txt.contentEquals("wizz")&& messageslength-1==index&& !from.contentEquals(login) ){	
 						Anims.wizz(getApplicationContext());
 				}
-				
+				if(isSoundPlaying){
+					isSoundPlaying = false;
+				}
 				return args;
 			}
 			else{

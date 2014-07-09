@@ -49,6 +49,7 @@
             android:layout_weight="1.5"
             android:background="#CCCCCC"
             android:gravity="center"
+            android:imeOptions="actionSend"
             android:hint="@string/your_message" />
 
         <Button

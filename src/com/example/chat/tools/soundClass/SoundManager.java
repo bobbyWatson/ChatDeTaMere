@@ -26,8 +26,8 @@ public class SoundManager {
 	
 	public Map<String, Integer> tableCompare=new HashMap<String, Integer>();
 
-//	public final int sound5;
-//	public final int sound6;
+	public final int sound5;
+	public final int sound6;
 
 	public Boolean ready;
 	
@@ -39,8 +39,9 @@ public class SoundManager {
 		sound2 = sp.load(appContext, R.raw.wetfart, 1);
 		sound3 = sp.load(appContext, R.raw.cartmanautority, 1);
 		sound4 = sp.load(appContext, R.raw.thibsmom, 1);
+		sound5 = sp.load(appContext, R.raw.whip, 1);
+		sound6 = sp.load(appContext, R.raw.hum, 1);
 		Log.v("SOUND MANAGER","sounds crée "+Integer.toString(sound1));
-		
 
 		ready=true;
 	}
